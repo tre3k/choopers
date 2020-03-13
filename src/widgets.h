@@ -18,6 +18,7 @@
 #include <qcustomplot.h>
 
 #include "calculate.h"
+#include "dialogs.h"
 
 class ChooperWidget : public QWidget
 {
@@ -107,15 +108,21 @@ private:
     QPushButton *button_calculate;
 
     QDoubleSpinBox *spinbox_sample_position;
+    QDoubleSpinBox *spinbox_detector_position;
 
 
     /* QCP Items */
     QCPItemText *text_sample_position = nullptr;
     QCPItemLine *line_sample_position = nullptr;
 
+    QCPItemText *text_detector_position = nullptr;
+    QCPItemLine *line_detector_position = nullptr;
+
     QCPItemText *text_chooper[4];
     QVector<QCPItemLine *> lines_chooper[4];
 
+
+    ResultDialog *rd;
 
 private:
     void PlotRescaleAxis(void){
@@ -127,6 +134,7 @@ private:
     s_windows getWindowsFromChooper(double distance, double phase,double period,double duty);
 
 private slots:
+    void paintDetectorPosition(double distance);
     void paintSampleDistance(double distance);
     void paintChooper1(double distance, double phase,double period,double duty){paintChooper(0,"Chooper #1",distance,phase,period,duty);}
     void paintChooper2(double distance, double phase,double period,double duty){paintChooper(1,"Chooper #2",distance,phase,period,duty);}
@@ -135,6 +143,9 @@ private slots:
 
 public slots:
     void ReleaseCalculatrion();
+
+signals:
+    void sendPercentLiveNeutrons(double);
 
 };
 

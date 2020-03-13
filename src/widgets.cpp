@@ -200,8 +200,12 @@ CentralWidget::CentralWidget(QWidget *parent) : QWidget(parent){
 
     button_calculate = new QPushButton("Calculate");
 
+    spinbox_detector_position = new QDoubleSpinBox();
+    spinbox_detector_position->setSuffix(" m");
+
     spinbox_sample_position = new QDoubleSpinBox();
     spinbox_sample_position->setSuffix(" m");
+    sample_position_layout->addRow("Detector position: ",spinbox_detector_position);
     sample_position_layout->addRow("Sample position: ",spinbox_sample_position);
 
     main_layout->setMargin(0);
@@ -241,7 +245,8 @@ CentralWidget::CentralWidget(QWidget *parent) : QWidget(parent){
     splitter->setSizes(splitter_sizes);
 
 
-
+    connect(spinbox_detector_position,SIGNAL(valueChanged(double)),
+            this,SLOT(paintDetectorPosition(double)));
     connect(spinbox_sample_position,SIGNAL(valueChanged(double)),
             this,SLOT(paintSampleDistance(double)));
     connect(chooper_widget1,SIGNAL(ValuesChanged(double,double,double,double)),
@@ -254,8 +259,10 @@ CentralWidget::CentralWidget(QWidget *parent) : QWidget(parent){
             this,SLOT(paintChooper4(double,double,double,double)));
     connect(button_calculate,SIGNAL(clicked()),this,SLOT(ReleaseCalculatrion()));
 
+
     // default value for sample position
     spinbox_sample_position->setValue(25.0);
+    spinbox_detector_position->setValue(30.0);
 
     chooper_widget1->spinbox_distance->setValue(5);
     chooper_widget1->spinbox_period->setValue(50);
@@ -276,6 +283,9 @@ CentralWidget::CentralWidget(QWidget *parent) : QWidget(parent){
     chooper_widget4->spinbox_period->setValue(30);
     chooper_widget4->spinbox_phase->setValue(15);
     chooper_widget4->spinbox_duty->setValue(30);
+
+    rd = new ResultDialog();
+    connect(this,SIGNAL(sendPercentLiveNeutrons(double)),rd,SLOT(showPercentNeutron(double)));
 }
 
 void CentralWidget::paintSampleDistance(double distance){
@@ -298,6 +308,27 @@ void CentralWidget::paintSampleDistance(double distance){
     plot->replot();
 
 }
+
+void CentralWidget::paintDetectorPosition(double distance){
+    if(text_detector_position != nullptr) delete text_detector_position;
+    if(line_detector_position != nullptr) delete line_detector_position;
+    text_detector_position = new QCPItemText(plot);
+    text_detector_position->setText("Detector position");
+    text_detector_position->setColor(QColor("green"));
+    text_detector_position->setPositionAlignment(Qt::AlignLeft|Qt::AlignBottom);
+    text_detector_position->position->setCoords(10,distance);
+
+    line_detector_position = new QCPItemLine(plot);
+    QPen line_pen;
+    line_pen.setColor(QColor("green"));
+    line_pen.setWidth(2);
+    line_detector_position->setPen(line_pen);
+    line_detector_position->start->setCoords(plot->xAxis->range().lower,distance);
+    line_detector_position->end->setCoords(plot->xAxis->range().upper,distance);
+
+    plot->replot();
+}
+
 
 void CentralWidget::paintChooper(int chooper_no, QString text, double distance, double phase, double period, double duty){
     if(text_chooper[chooper_no] != nullptr) delete text_chooper[chooper_no];
@@ -349,6 +380,8 @@ s_windows CentralWidget::getWindowsFromChooper(double distance, double phase, do
 
 void CentralWidget::ReleaseCalculatrion(){
     plot->clearGraphs();
+    int all_neutrons = 0,live_neutrons = 0;
+    double neutron_percent;
 
     int time_count = 0;
     int lambda_count = 0;
@@ -406,15 +439,22 @@ void CentralWidget::ReleaseCalculatrion(){
                 plot->graph()->setName(QString::number(lambda));
                 plot->graph()->setData(neutron.v_time,neutron.v_distance);
                 plot->replot();
+
+                live_neutrons ++;
             }
 
             lambda += lambda_step;
             lambda_count ++;
+
+            all_neutrons ++;
         }
 
         time_count++;
         time += time_step;
     }
 
+    neutron_percent = 100.0*live_neutrons/(double)all_neutrons;
+    emit sendPercentLiveNeutrons(neutron_percent);
+    rd->show();
 
 }

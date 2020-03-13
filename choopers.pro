@@ -10,13 +10,15 @@ SOURCES += \
             src/mainwindow.cpp \
             src/widgets.cpp \
             src/external/qcustomplot.cpp \
-            src/calculate.cpp
+            src/calculate.cpp \
+            src/dialogs.cpp
 
 HEADERS += \
             src/mainwindow.h \
             src/widgets.h \
             src/external/qcustomplot.h \
-            src/calculate.h
+            src/calculate.h \
+            src/dialogs.h
 
 INCLUDEPATH += \
             src/ \
