@@ -33,6 +33,7 @@ private:
     void createMenuBar();
 
     s_options options;
+    OptionsDialog *options_dialog;
 
 
 public:
@@ -43,6 +44,7 @@ signals:
     void sendOptions(s_options opt);
 
 public slots:
+    void action_options();
 
 
 };

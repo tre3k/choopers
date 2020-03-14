@@ -11,7 +11,6 @@
 #include <QVector>
 #include <QThread>
 
-#include <QDebug>
 
 #define C_PLANK 1.054571817e-34
 #define C_MASS_NEUTRON 1.67492749804e-27
@@ -28,7 +27,6 @@ public:
     void setWindows(double distance, double phase, double period, double duty){
         s_window window;
         int N_lines = (time_range_max - time_range_min)/period;
-        qDebug() << N_lines;
         ds = distance;
         for(int i=0;i<N_lines;i++){
             window.max = phase+i*period;

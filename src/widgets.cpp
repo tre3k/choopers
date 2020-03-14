@@ -491,48 +491,52 @@ void CentralWidget::EndThread(CalculateThread *ct){
 
 QColor CentralWidget::colorFromLambda(double lambda){
     QColor retval;
-    const double max_color = 245;
-    const double min_color = 10;
+    const double max_color = 235;
+    const double min_color = 20;
     const double alpha = 200;
     double r = 0,g = r,b = r;
     double delta_lambda = (options.lambda_max - options.lambda_min)/6;
     double coeff;
 
-    qDebug() << lambda;
-
     /* #1 interval */
     if(lambda >= options.lambda_min && lambda < options.lambda_min+delta_lambda){
         coeff = (lambda-options.lambda_min)/delta_lambda;
-        r = max_color; g = min_color + coeff*(max_color-min_color); b = min_color;
+        //r = max_color; g = min_color + coeff*(max_color-min_color); b = min_color;
+        r = min_color + coeff*(max_color-min_color); g = min_color; b = max_color;
     }
 
     /* #2 interval */
     if(lambda >= options.lambda_min + delta_lambda && lambda < options.lambda_min + 2*delta_lambda){
         coeff = (lambda - options.lambda_min - delta_lambda)/delta_lambda;
-        r = max_color - coeff*(max_color-min_color); g = max_color; b = min_color;
+        //r = max_color - coeff*(max_color-min_color); g = max_color; b = min_color;
+        r = min_color; g = max_color - coeff*(max_color-min_color); b = max_color;
     }
 
     /* #3 interval */
     if(lambda >= options.lambda_min + 2*delta_lambda && lambda < options.lambda_min + 3*delta_lambda){
         coeff = (lambda-options.lambda_min - 2*delta_lambda)/delta_lambda;
+        //r = min_color; g = max_color; b = min_color + coeff*(max_color-min_color);
         r = min_color; g = max_color; b = min_color + coeff*(max_color-min_color);
     }
 
     /* #4 interval */
     if(lambda >= options.lambda_min + 3*delta_lambda && lambda < options.lambda_min + 4*delta_lambda){
         coeff = (lambda-options.lambda_min - 3*delta_lambda)/delta_lambda;
-        r = min_color; g = max_color - coeff*(max_color-min_color); b = max_color;
+        //r = min_color; g = max_color - coeff*(max_color-min_color); b = max_color;
+       r = max_color - coeff*(max_color-min_color); g = max_color; b = min_color;
     }
 
     /* #5 interval */
     if(lambda >= options.lambda_min + 4*delta_lambda && lambda < options.lambda_min + 5*delta_lambda){
         coeff = (lambda - options.lambda_min - 4*delta_lambda)/delta_lambda;
-        r = min_color + coeff*(max_color-min_color); g = min_color; b = max_color;
+        //r = min_color + coeff*(max_color-min_color); g = min_color; b = max_color;
+        r = max_color; g = min_color + coeff*(max_color-min_color); b = min_color;
     }
 
     /* #6 interval */
     if(lambda >= options.lambda_min + 5*delta_lambda && lambda <= options.lambda_max){
         coeff = (lambda-options.lambda_min - 5*delta_lambda)/delta_lambda;
+        //r = max_color; g = min_color; b = max_color - coeff*(max_color-min_color);
         r = max_color; g = min_color; b = max_color - coeff*(max_color-min_color);
     }
 

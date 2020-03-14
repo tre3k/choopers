@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Under license GNU GLP (c) 2020
  * Autor: Kirill Pshenichnyi
  *
@@ -27,11 +27,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     options.therads = 5;
 
-    /* create central widget */
+    /* create options dialog */
+    options_dialog = new OptionsDialog();
+    connect(this,SIGNAL(sendOptions(s_options)),options_dialog,SLOT(getOptions(s_options)));
 
+    /* create central widget */
     CentralWidget *central_widget = new CentralWidget(this->statusBar());
     connect(this,SIGNAL(sendOptions(s_options)),central_widget,SLOT(getOptions(s_options)));
     emit sendOptions(options);
+    connect(options_dialog,SIGNAL(sendOptions(s_options)),central_widget,SLOT(getOptions(s_options)));
     this->setCentralWidget(central_widget);
 
     createMenuBar();
@@ -42,14 +46,21 @@ void MainWindow::createMenuBar(){
     menu_bar.file_menu = new QMenu("file");
     menu_bar.option = new QAction("options");
     menu_bar.file_menu->addAction(menu_bar.option);
+    connect(menu_bar.option,SIGNAL(triggered()),this,SLOT(action_options()));
 
     this->menuBar()->addMenu(menu_bar.file_menu);
 
 }
 
 void MainWindow::createStatusBar(){
-
+    emit sendOptions(options);
     this->statusBar()->show();
+
 }
 
+
+void MainWindow::action_options(){
+    options_dialog->show();
+
+}
 
