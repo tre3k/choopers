@@ -38,7 +38,6 @@ private:
     QPushButton *addetional_button;
     ChopperDialog *chopper_dialog;
 
-
 private slots:
     void GenerateSignal(QString str_value){
         double distance,phase,period,duty;
@@ -52,6 +51,7 @@ private slots:
     }
 
     void add_button_click(void);
+
 
 signals:
     void ValuesChanged(double distance, double phase,double period,double duty);

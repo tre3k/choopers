@@ -6,6 +6,7 @@
 #include <QFormLayout>
 #include <QPushButton>
 #include <QRadioButton>
+#include <math.h>
 
 #include <QDoubleSpinBox>
 
@@ -32,15 +33,16 @@ class ChopperDialog : public QDialog
 public:
     explicit ChopperDialog(QString title, QWidget *parent = nullptr);
 
-    struct s_values{
-        double period,duty;
-    } values;
 
 private:
     QDoubleSpinBox *spinbox_frequency;
     QDoubleSpinBox *spinbox_rpm;
     QRadioButton *radio_frequency;
     QRadioButton *radio_rpm;
+
+    QSpinBox *spinbox_gaps;
+    QDoubleSpinBox *spinbox_width_gap;
+    QDoubleSpinBox *spinbox_cb;
 
     QPushButton *button_ok;
     QPushButton *button_close;
@@ -65,7 +67,8 @@ private slots:
     }
 
 signals:
-    void sendValues(s_values);
+    void sendDuty(double);
+    void sendPeriod(double);
 
 
 };

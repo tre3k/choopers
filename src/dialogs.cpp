@@ -17,7 +17,6 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     radio_rpm = new QRadioButton();
     spinbox_frequency = new QDoubleSpinBox();
     spinbox_frequency->setSuffix(" Hz");
-    spinbox_frequency->setValue(10.0);
     spinbox_rpm = new QDoubleSpinBox();
     spinbox_rpm->setSuffix(" rpm");
     spinbox_frequency->setRange(0,999);
@@ -30,6 +29,14 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     freq_layout->addWidget(spinbox_frequency,0,0); freq_layout->addWidget(radio_frequency,0,1);
     freq_layout->addWidget(spinbox_rpm,1,0); freq_layout->addWidget(radio_rpm,1,1);
 
+    spinbox_gaps = new QSpinBox();
+    spinbox_width_gap = new QDoubleSpinBox();
+    spinbox_width_gap->setSuffix(" mm");
+    spinbox_width_gap->setRange(0,99);
+    spinbox_cb = new QDoubleSpinBox();
+    spinbox_cb->setSuffix(" cm");
+    spinbox_cb->setRange(0,99);
+
     auto button_layout = new QHBoxLayout();
     button_ok = new QPushButton("ok");
     button_close = new QPushButton("close");
@@ -38,7 +45,16 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     button_layout->addWidget(button_ok);
     button_layout->addWidget(button_close);
 
+    spinbox_frequency->setValue(10.0);
+    spinbox_rpm->setValue(HzToRPM(spinbox_frequency->value()));
+    spinbox_gaps->setValue(4);
+    spinbox_width_gap->setValue(10);
+    spinbox_cb->setValue(20);
+
     form_layout->addRow("frequency: ",freq_layout);
+    form_layout->addRow("gaps: ",spinbox_gaps);
+    form_layout->addRow("widht of gap: ",spinbox_width_gap);
+    form_layout->addRow("distance center to beam: ",spinbox_cb);
     main_layout->addLayout(form_layout);
     main_layout->addLayout(button_layout);
 
@@ -58,6 +74,19 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
 }
 
 void ChopperDialog::calculate(){
+    double duty;
+    double period;
+
+    double freq = spinbox_frequency->value();
+    int gaps = spinbox_gaps->value();
+    double widht_gap = spinbox_width_gap->value();
+    double cb = spinbox_cb->value();
+
+    period = 1000.0/freq/gaps;          // in ms
+    duty = 10*widht_gap/(2*M_PI*cb/gaps);
+
+    emit sendDuty(duty);
+    emit sendPeriod(period);
 
 }
 

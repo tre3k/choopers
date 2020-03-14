@@ -29,12 +29,15 @@ ChooperWidget::ChooperWidget(QString str_label, QWidget *parent) : QWidget(paren
 
     spinbox_distance = new QDoubleSpinBox();
     spinbox_distance->setSuffix(" m");
+    spinbox_distance->setRange(0,99999);
 
     spinbox_phase = new QDoubleSpinBox();
     spinbox_phase->setSuffix(" ms");
+    spinbox_phase->setRange(-9999,9999);
 
     spinbox_period = new QDoubleSpinBox();
     spinbox_period->setSuffix(" ms");
+    spinbox_period->setRange(0,9999);
 
     spinbox_duty = new QDoubleSpinBox();
     spinbox_duty->setRange(0,100);
@@ -49,6 +52,9 @@ ChooperWidget::ChooperWidget(QString str_label, QWidget *parent) : QWidget(paren
     connect(spinbox_phase,SIGNAL(valueChanged(QString)),this,SLOT(GenerateSignal(QString)));
     connect(spinbox_period,SIGNAL(valueChanged(QString)),this,SLOT(GenerateSignal(QString)));
     connect(spinbox_duty,SIGNAL(valueChanged(QString)),this,SLOT(GenerateSignal(QString)));
+
+    connect(chopper_dialog,SIGNAL(sendDuty(double)),spinbox_duty,SLOT(setValue(double)));
+    connect(chopper_dialog,SIGNAL(sendPeriod(double)),spinbox_period,SLOT(setValue(double)));
 }
 
 void ChooperWidget::add_button_click(){
