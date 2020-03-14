@@ -2,5 +2,6 @@
     <qresource prefix="/icons">
         <file alias="sett.svg">src/icons/sett.svg</file>
         <file alias="about.svg">src/icons/about.svg</file>
+        <file alias="icon.svg">src/icons/icon.svg</file>
     </qresource>
 </RCC>

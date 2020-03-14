@@ -7,6 +7,9 @@
 #include "dialogs.h"
 
 ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
+    QLocale locale("en_EN.UTF-8");
+    this->setLocale(locale);
+
     this->setWindowTitle(title);
     this->setWindowIcon(QIcon(":/icons/sett.svg"));
 
@@ -126,6 +129,9 @@ void ResultDialog::showPercentNeutron(double percent){
 OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
     this->setWindowTitle("Options");
 
+    QLocale locale("en_EN.UTF-8");
+    this->setLocale(locale);
+
     auto *spinboxs_layout = new QFormLayout();
     auto *main_layout = new QVBoxLayout();
     auto *button_layout = new QHBoxLayout();
@@ -201,6 +207,9 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent){
     auto close_button = new QPushButton("close");
     auto main_layout = new QVBoxLayout();
     auto button_layout = new QHBoxLayout();
+    auto pixmap_label = new QLabel();
+    QPixmap logo(":/icons/icon.svg");
+    pixmap_label->setPixmap(logo.scaled(70,70,Qt::KeepAspectRatio,Qt::SmoothTransformation));
     auto label = new QLabel("<b>Choopers v1.0</b><br><hr>"
                             "Under license GNU GLPv3 (c) 2020<br>"
                             "Petersburg Nuclear Physics Institute named by B.P.Konstantinov of NRC «Kurchatov Institute» PNPI<br>"
@@ -208,6 +217,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent){
                             "Especially for Luba, Autor: Kirill Pshenichnyi (pshcyrill@mail.ru)<br><hr>"
                             "GNU GPLv3, Source code: <a href=\"https://github.com/tre3k/choopers\">GitHub: https://github.com/tre3k/choopers</a>");
 
+    main_layout->addWidget(pixmap_label);
     main_layout->addWidget(label);
 
     connect(close_button,SIGNAL(clicked()),this,SLOT(close()));

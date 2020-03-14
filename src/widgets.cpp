@@ -245,10 +245,10 @@ CentralWidget::CentralWidget(QStatusBar *sb, QWidget *parent) : QWidget(parent){
     plot->yAxis->setLabel("Distance, m");
     PlotRescaleAxis();
 
-    chooper_widget1 = new ChooperWidget("Chooper #1");
-    chooper_widget2 = new ChooperWidget("Chooper #2");
-    chooper_widget3 = new ChooperWidget("Chooper #3");
-    chooper_widget4 = new ChooperWidget("Chooper #4");
+    chooper_widget1 = new ChooperWidget("Chopper #1");
+    chooper_widget2 = new ChooperWidget("Chopper #2");
+    chooper_widget3 = new ChooperWidget("Chopper #3");
+    chooper_widget4 = new ChooperWidget("Chopper #4");
 
     right_layout->addLayout(sample_position_layout);
     right_layout->addWidget(chooper_widget1);

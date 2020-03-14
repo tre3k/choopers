@@ -8,10 +8,13 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
+    QLocale locale("en_EN.UTF-8");
+    this->setLocale(locale);
+    this->setWindowIcon(QIcon(":/icons/icon.svg"));
     this->setMinimumHeight(200);
     this->setMinimumWidth(500);
     this->setGeometry(0,0,1024,650);
-    this->setWindowTitle("Choppers ");
+    this->setWindowTitle("Choopers ");
 
     /* default options */
     options.distance_range_max = 40.0;

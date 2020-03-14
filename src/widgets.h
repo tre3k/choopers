@@ -150,10 +150,10 @@ private:
 private slots:
     void paintDetectorPosition(double distance);
     void paintSampleDistance(double distance);
-    void paintChooper1(double distance, double phase,double period,double duty){paintChooper(0,"Chooper #1",distance,phase,period,duty);}
-    void paintChooper2(double distance, double phase,double period,double duty){paintChooper(1,"Chooper #2",distance,phase,period,duty);}
-    void paintChooper3(double distance, double phase,double period,double duty){paintChooper(2,"Chooper #3",distance,phase,period,duty);}
-    void paintChooper4(double distance, double phase,double period,double duty){paintChooper(3,"Chooper #4",distance,phase,period,duty);}
+    void paintChooper1(double distance, double phase,double period,double duty){paintChooper(0,"Chopper #1",distance,phase,period,duty);}
+    void paintChooper2(double distance, double phase,double period,double duty){paintChooper(1,"Chopper #2",distance,phase,period,duty);}
+    void paintChooper3(double distance, double phase,double period,double duty){paintChooper(2,"Chopper #3",distance,phase,period,duty);}
+    void paintChooper4(double distance, double phase,double period,double duty){paintChooper(3,"Chopper #4",distance,phase,period,duty);}
 
 public slots:
     void ReleaseCalculatrion();
