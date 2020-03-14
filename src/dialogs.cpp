@@ -36,6 +36,7 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     spinbox_cb = new QDoubleSpinBox();
     spinbox_cb->setSuffix(" cm");
     spinbox_cb->setRange(0,99);
+    spinbox_gaps->setRange(1,99);
 
     auto button_layout = new QHBoxLayout();
     button_ok = new QPushButton("ok");
@@ -50,6 +51,8 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     spinbox_gaps->setValue(4);
     spinbox_width_gap->setValue(10);
     spinbox_cb->setValue(20);
+
+
 
     form_layout->addRow("frequency: ",freq_layout);
     form_layout->addRow("gaps: ",spinbox_gaps);
@@ -87,7 +90,6 @@ void ChopperDialog::calculate(){
 
     emit sendDuty(duty);
     emit sendPeriod(period);
-
 }
 
 
@@ -188,4 +190,29 @@ OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
 
     connect(button_ok,SIGNAL(clicked()),this,SLOT(button_ok_press()));
     connect(button_close,SIGNAL(clicked()),this,SLOT(button_close_press()));
+}
+
+
+AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent){
+    this->setWindowTitle("About");
+
+    auto close_button = new QPushButton("close");
+    auto main_layout = new QVBoxLayout();
+    auto button_layout = new QHBoxLayout();
+    auto label = new QLabel("<b>Choopers v1.0</b><br><hr>"
+                            "Under license GNU GLPv3 (c) 2020<br>"
+                            "Petersburg Nuclear Physics Institute named by B.P.Konstantinov of NRC «Kurchatov Institute» PNPI<br>"
+                            "Saint-Petersburg State University<br>"
+                            "Especially for Luba, Autor: Kirill Pshenichnyi (pshcyrill@mail.ru)<br><hr>"
+                            "GNU GPLv3, Source code: <a href=\"https://github.com/tre3k/choopers\">GitHub: https://github.com/tre3k/choopers</a>");
+
+    main_layout->addWidget(label);
+
+    connect(close_button,SIGNAL(clicked()),this,SLOT(close()));
+
+    button_layout->addStretch();
+    button_layout->addWidget(close_button);
+    main_layout->addLayout(button_layout);
+    this->setLayout(main_layout);
+
 }

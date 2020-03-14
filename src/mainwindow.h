@@ -29,6 +29,8 @@ private:
         QAction *quit;
         QMenu *tools_menu;
         QAction *option;
+        QMenu *help_menu;
+        QAction *about;
     } menu_bar;
 
     void createStatusBar();
@@ -36,6 +38,7 @@ private:
 
     s_options options;
     OptionsDialog *options_dialog;
+    AboutDialog *about_dialog;
 
 
 public:
@@ -49,6 +52,9 @@ public slots:
     void action_options();
     void action_quit(){
         QApplication::quit();
+    }
+    void action_about(){
+        about_dialog->show();
     }
 
 

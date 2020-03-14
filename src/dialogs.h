@@ -160,9 +160,24 @@ private slots:
         options.therads = spinbox_threads->value();
 
         emit sendOptions(options);
+        this->hide();
     }
 
     void button_close_press(){
+        this->hide();
+    }
+
+};
+
+
+class AboutDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    explicit AboutDialog(QWidget *parent = nullptr);
+
+public slots:
+    void close(){
         this->hide();
     }
 
