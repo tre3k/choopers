@@ -6,8 +6,68 @@
 
 #include "dialogs.h"
 
+ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
+    this->setWindowTitle(title);
+
+    auto main_layout = new QVBoxLayout();
+    auto form_layout = new QFormLayout();
+
+    auto freq_layout = new QGridLayout();
+    radio_frequency = new QRadioButton();
+    radio_rpm = new QRadioButton();
+    spinbox_frequency = new QDoubleSpinBox();
+    spinbox_frequency->setSuffix(" Hz");
+    spinbox_frequency->setValue(10.0);
+    spinbox_rpm = new QDoubleSpinBox();
+    spinbox_rpm->setSuffix(" rpm");
+    spinbox_frequency->setRange(0,999);
+    spinbox_rpm->setRange(0,60*9999);
+
+    spinbox_frequency->setMinimumHeight(20);
+    spinbox_rpm->setMinimumHeight(20);
+
+    freq_layout->setMargin(0);
+    freq_layout->addWidget(spinbox_frequency,0,0); freq_layout->addWidget(radio_frequency,0,1);
+    freq_layout->addWidget(spinbox_rpm,1,0); freq_layout->addWidget(radio_rpm,1,1);
+
+    auto button_layout = new QHBoxLayout();
+    button_ok = new QPushButton("ok");
+    button_close = new QPushButton("close");
+
+    button_layout->addStretch();
+    button_layout->addWidget(button_ok);
+    button_layout->addWidget(button_close);
+
+    form_layout->addRow("frequency: ",freq_layout);
+    main_layout->addLayout(form_layout);
+    main_layout->addLayout(button_layout);
+
+    this->setLayout(main_layout);
+
+    connect(radio_rpm,SIGNAL(toggled(bool)),spinbox_rpm,SLOT(setEnabled(bool)));
+    connect(radio_frequency,SIGNAL(toggled(bool)),spinbox_frequency,SLOT(setEnabled(bool)));
+
+    radio_frequency->setChecked(true);
+    spinbox_rpm->setDisabled(true);
+
+    connect(button_ok,SIGNAL(clicked()),this,SLOT(calculate()));
+    connect(button_close,SIGNAL(clicked()),this,SLOT(close()));
+
+    connect(spinbox_frequency,SIGNAL(valueChanged(double)),this,SLOT(FreqChanged(double)));
+    connect(spinbox_rpm,SIGNAL(valueChanged(double)),this,SLOT(RpmChanged(double)));
+}
+
+void ChopperDialog::calculate(){
+
+}
+
+
 ResultDialog::ResultDialog(QWidget *parent) : QDialog(parent){
+    this->setWindowTitle("Result");
+
     percentLabel = new QLabel();
+    min_lambda = new QLabel();
+    max_lambda = new QLabel();
     mainLayout = new QFormLayout();
     auto button_layout = new QHBoxLayout();
 
@@ -18,6 +78,8 @@ ResultDialog::ResultDialog(QWidget *parent) : QDialog(parent){
     button_layout->addWidget(close_button);
 
     mainLayout->addRow("Neutrons is live: ",percentLabel);
+    mainLayout->addRow("Minimum wavelenght: ",min_lambda);
+    mainLayout->addRow("Maximum wavelenght: ",max_lambda);
     mainLayout->addRow(button_layout);
 
     this->setLayout(mainLayout);
@@ -30,6 +92,8 @@ void ResultDialog::showPercentNeutron(double percent){
 
 /* options dialog */
 OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
+    this->setWindowTitle("Options");
+
     auto *spinboxs_layout = new QFormLayout();
     auto *main_layout = new QVBoxLayout();
     auto *button_layout = new QHBoxLayout();

@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QFormLayout>
 #include <QPushButton>
+#include <QRadioButton>
 
 #include <QDoubleSpinBox>
 
@@ -23,6 +24,52 @@ struct s_options{
     int therads;
 };
 
+
+/* Chopper dialog */
+class ChopperDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    explicit ChopperDialog(QString title, QWidget *parent = nullptr);
+
+    struct s_values{
+        double period,duty;
+    } values;
+
+private:
+    QDoubleSpinBox *spinbox_frequency;
+    QDoubleSpinBox *spinbox_rpm;
+    QRadioButton *radio_frequency;
+    QRadioButton *radio_rpm;
+
+    QPushButton *button_ok;
+    QPushButton *button_close;
+
+    double HzToRPM(double val){
+        return 60.0*val;
+    }
+    double RPMToHz(double val){
+        return val/60.0;
+    }
+
+private slots:
+    void calculate();
+    void close(){
+        this->hide();
+    }
+    void FreqChanged(double value){
+        spinbox_rpm->setValue(HzToRPM(value));
+    }
+    void RpmChanged(double value){
+        spinbox_frequency->setValue(RPMToHz(value));
+    }
+
+signals:
+    void sendValues(s_values);
+
+
+};
+
 /* ResultDialog */
 class ResultDialog : public QDialog
 {
@@ -34,9 +81,16 @@ private:
     QLabel *percentLabel = nullptr;
     QFormLayout *mainLayout = nullptr;
 
+    QLabel *min_lambda = nullptr;
+    QLabel *max_lambda = nullptr;
+
     QPushButton *close_button;
 public slots:
     void showPercentNeutron(double);
+    void recvMinMaxLambda(double min,double max){
+        min_lambda->setText(QString::number(min)+" Å");
+        max_lambda->setText(QString::number(max)+" Å");
+    }
     void close_press(){
         this->hide();
     }

@@ -34,6 +34,11 @@ public:
     QDoubleSpinBox *spinbox_period;
     QDoubleSpinBox *spinbox_duty;
 
+private:
+    QPushButton *addetional_button;
+    ChopperDialog *chopper_dialog;
+
+
 private slots:
     void GenerateSignal(QString str_value){
         double distance,phase,period,duty;
@@ -45,6 +50,8 @@ private slots:
 
         emit ValuesChanged(distance,phase,period,duty);
     }
+
+    void add_button_click(void);
 
 signals:
     void ValuesChanged(double distance, double phase,double period,double duty);
@@ -183,6 +190,7 @@ public slots:
     }
 
 signals:
+    void sendMinMaxLambda(double,double);
     void sendPercentLiveNeutrons(double);
 
 };

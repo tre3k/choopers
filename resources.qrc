@@ -1,2 +1,5 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="sett.svg">src/icons/sett.svg</file>
+    </qresource>
+</RCC>

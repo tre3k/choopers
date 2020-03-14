@@ -10,9 +10,21 @@ ChooperWidget::ChooperWidget(QString str_label, QWidget *parent) : QWidget(paren
 {
     auto main_layout = new QVBoxLayout(this);
     auto form_layout = new QFormLayout();
+    auto title_layout = new QHBoxLayout();
+
+    chopper_dialog = new ChopperDialog(str_label);
+
+    title_layout->setSpacing(0);
+    title_layout->setMargin(0);
+    addetional_button = new QPushButton();
+    addetional_button->setIcon(QIcon(":/icons/sett.svg"));
+    connect(addetional_button,SIGNAL(clicked()),this,SLOT(add_button_click()));
 
     label  = new QLabel("<b>"+str_label+":</b>");
-    main_layout->addWidget(label);
+    title_layout->addWidget(label);
+    title_layout->addStretch();
+    title_layout->addWidget(addetional_button);
+    main_layout->addLayout(title_layout);
     main_layout->addLayout(form_layout);
 
     spinbox_distance = new QDoubleSpinBox();
@@ -39,6 +51,9 @@ ChooperWidget::ChooperWidget(QString str_label, QWidget *parent) : QWidget(paren
     connect(spinbox_duty,SIGNAL(valueChanged(QString)),this,SLOT(GenerateSignal(QString)));
 }
 
+void ChooperWidget::add_button_click(){
+    chopper_dialog->show();
+}
 
 
 /*  ============================================ InteractivePlot - general plot for others plots ============================================ */
@@ -286,6 +301,7 @@ CentralWidget::CentralWidget(QStatusBar *sb, QWidget *parent) : QWidget(parent){
 
     rd = new ResultDialog();
     connect(this,SIGNAL(sendPercentLiveNeutrons(double)),rd,SLOT(showPercentNeutron(double)));
+    connect(this,SIGNAL(sendMinMaxLambda(double,double)),rd,SLOT(recvMinMaxLambda(double,double)));
 
     main_status_bar = sb;
     main_status_bar->showMessage("done.");
@@ -484,7 +500,16 @@ void CentralWidget::EndThread(CalculateThread *ct){
     delete ct;
 
     int live_neutrons = 0;
-    for(int i = 0;i<neutrons.size();i++) if(neutrons.at(i)->isLive()) live_neutrons ++;
+    double min_lambda = options.lambda_max;
+    double max_lambda = options.lambda_min;
+    for(int i = 0;i<neutrons.size();i++){
+        if(neutrons.at(i)->isLive()){
+            if(neutrons.at(i)->getWavelenght() > max_lambda) max_lambda = neutrons.at(i)->getWavelenght();
+            if(neutrons.at(i)->getWavelenght() < min_lambda) min_lambda = neutrons.at(i)->getWavelenght();
+            live_neutrons ++;
+        }
+    }
+    emit sendMinMaxLambda(min_lambda,max_lambda);
     emit sendPercentLiveNeutrons(100.0*live_neutrons/(double)neutrons.size());
 
 }
