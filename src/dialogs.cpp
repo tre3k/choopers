@@ -8,6 +8,7 @@
 
 ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     this->setWindowTitle(title);
+    this->setWindowIcon(QIcon(":/icons/sett.svg"));
 
     auto main_layout = new QVBoxLayout();
     auto form_layout = new QFormLayout();
@@ -195,6 +196,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
 
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent){
     this->setWindowTitle("About");
+    this->setWindowIcon(QIcon(":/icons/about.svg"));
 
     auto close_button = new QPushButton("close");
     auto main_layout = new QVBoxLayout();
