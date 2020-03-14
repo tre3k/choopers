@@ -16,6 +16,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     this->setGeometry(0,0,1024,650);
     this->setWindowTitle("Choopers ");
 
+    QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
+    this->setFont(fontDroid);
+
+
     /* default options */
     options.distance_range_max = 40.0;
     options.distance_range_min = 0.0;

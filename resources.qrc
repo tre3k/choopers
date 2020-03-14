@@ -4,4 +4,7 @@
         <file alias="about.svg">src/icons/about.svg</file>
         <file alias="icon.svg">src/icons/icon.svg</file>
     </qresource>
+    <qresource prefix="/fonts">
+        <file alias="droid.ttf">src/fonts/DroidNaskh-Regular.ttf</file>
+    </qresource>
 </RCC>
