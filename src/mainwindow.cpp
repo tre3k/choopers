@@ -43,19 +43,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 }
 
 void MainWindow::createMenuBar(){
-    menu_bar.file_menu = new QMenu("file");
-    menu_bar.option = new QAction("options");
-    menu_bar.file_menu->addAction(menu_bar.option);
+    menu_bar.file_menu = new QMenu("&file");
+    menu_bar.quit = new QAction("&quit");
+    menu_bar.tools_menu = new QMenu("&tools");
+    menu_bar.option = new QAction("&options");
+
+    menu_bar.file_menu->addAction(menu_bar.quit);
+    connect(menu_bar.quit,SIGNAL(triggered()),this,SLOT(action_quit()));
+    menu_bar.tools_menu->addAction(menu_bar.option);
     connect(menu_bar.option,SIGNAL(triggered()),this,SLOT(action_options()));
 
     this->menuBar()->addMenu(menu_bar.file_menu);
+    this->menuBar()->addMenu(menu_bar.tools_menu);
 
 }
 
 void MainWindow::createStatusBar(){
     emit sendOptions(options);
     this->statusBar()->show();
-
 }
 
 

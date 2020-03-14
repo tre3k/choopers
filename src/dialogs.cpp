@@ -9,8 +9,16 @@
 ResultDialog::ResultDialog(QWidget *parent) : QDialog(parent){
     percentLabel = new QLabel();
     mainLayout = new QFormLayout();
+    auto button_layout = new QHBoxLayout();
+
+    close_button = new QPushButton("close");
+    connect(close_button,SIGNAL(clicked()),this,SLOT(close_press()));
+
+    button_layout->addStretch();
+    button_layout->addWidget(close_button);
 
     mainLayout->addRow("Neutrons is live: ",percentLabel);
+    mainLayout->addRow(button_layout);
 
     this->setLayout(mainLayout);
 }
@@ -70,6 +78,8 @@ OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
     spinboxs_layout->addRow("distance<sub>min </sub>: ",spinbox_distance_min);
     spinboxs_layout->addRow("distance<sub>max </sub>: ",spinbox_distance_max);
 
+    spinbox_threads = new QSpinBox();
+    spinboxs_layout->addRow("threads (cpus-1): ",spinbox_threads);
 
     button_close = new QPushButton("close");
     button_ok = new QPushButton("ok");

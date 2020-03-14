@@ -26,6 +26,8 @@ private:
 
     struct s_menu_bar{
         QMenu *file_menu;
+        QAction *quit;
+        QMenu *tools_menu;
         QAction *option;
     } menu_bar;
 
@@ -45,6 +47,9 @@ signals:
 
 public slots:
     void action_options();
+    void action_quit(){
+        QApplication::quit();
+    }
 
 
 };

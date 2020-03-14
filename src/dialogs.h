@@ -21,7 +21,6 @@ struct s_options{
     double lambda_step;
 
     int therads;
-
 };
 
 /* ResultDialog */
@@ -35,8 +34,12 @@ private:
     QLabel *percentLabel = nullptr;
     QFormLayout *mainLayout = nullptr;
 
+    QPushButton *close_button;
 public slots:
     void showPercentNeutron(double);
+    void close_press(){
+        this->hide();
+    }
 };
 
 /* OptionsDialog */
@@ -54,6 +57,8 @@ private:
 
     QDoubleSpinBox *spinbox_distance_max;
     QDoubleSpinBox *spinbox_distance_min;
+
+    QSpinBox *spinbox_threads;
 
     QPushButton *button_ok,*button_close;
 
@@ -78,6 +83,8 @@ public slots:
 
         spinbox_distance_max->setValue(options.distance_range_max);
         spinbox_distance_min->setValue(options.distance_range_min);
+
+        spinbox_threads->setValue(options.therads);
     }
 
 private slots:
@@ -92,6 +99,8 @@ private slots:
 
         options.distance_range_max = spinbox_distance_max->value();
         options.distance_range_min = spinbox_distance_min->value();
+
+        options.therads = spinbox_threads->value();
 
         emit sendOptions(options);
     }
