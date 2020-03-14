@@ -16,6 +16,7 @@
 #include <QSplitter>
 #include <QVector>
 #include <qcustomplot.h>
+#include <QStatusBar>
 
 #include "calculate.h"
 #include "dialogs.h"
@@ -88,9 +89,11 @@ class CentralWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CentralWidget(QWidget *parent = nullptr);
+    explicit CentralWidget(QStatusBar *sb = nullptr, QWidget *parent = nullptr);
 
 private:
+    s_options options;
+
     struct s_double_range{
         double min;
         double max;
@@ -121,17 +124,21 @@ private:
     QCPItemText *text_chooper[4];
     QVector<QCPItemLine *> lines_chooper[4];
 
-
     ResultDialog *rd;
+
+    QVector<Neutron *> neutrons;
+
+    /* Main Windows communication */
+    QStatusBar *main_status_bar;
 
 private:
     void PlotRescaleAxis(void){
-        plot->xAxis->setRange(time_range.min,time_range.max);
-        plot->yAxis->setRange(distance_range.min,distance_range.max);
+        plot->xAxis->setRange(options.time_range_min,options.time_range_max);
+        plot->yAxis->setRange(options.distance_range_min,options.distance_range_max);
         plot->replot();
     }
-    void paintChooper(int chooper_no, QString text, double distance, double phase,double period,double duty);
-    s_windows getWindowsFromChooper(double distance, double phase,double period,double duty);
+    void paintChooper(int chooper_no, QString text, double distance, double phase,double period,double duty); 
+    QColor colorFromLambda(double lambda);
 
 private slots:
     void paintDetectorPosition(double distance);
@@ -143,6 +150,37 @@ private slots:
 
 public slots:
     void ReleaseCalculatrion();
+    void PlotNeutron(Neutron *neutron);
+    void EndThread(CalculateThread *ct);
+
+    void showMessageFromPlot(QCPAbstractPlottable *plot,int index,QMouseEvent *event){
+        if(main_status_bar!=nullptr) main_status_bar->showMessage(plot->name());
+    }
+
+    void getOptions(s_options opt){
+        options = opt;
+        PlotRescaleAxis();
+
+        paintDetectorPosition(spinbox_detector_position->value());
+        paintSampleDistance(spinbox_sample_position->value());
+        paintChooper1(chooper_widget1->spinbox_distance->value(),
+                      chooper_widget1->spinbox_phase->value(),
+                      chooper_widget1->spinbox_period->value(),
+                      chooper_widget1->spinbox_duty->value());
+        paintChooper2(chooper_widget2->spinbox_distance->value(),
+                      chooper_widget2->spinbox_phase->value(),
+                      chooper_widget2->spinbox_period->value(),
+                      chooper_widget2->spinbox_duty->value());
+        paintChooper3(chooper_widget3->spinbox_distance->value(),
+                      chooper_widget3->spinbox_phase->value(),
+                      chooper_widget3->spinbox_period->value(),
+                      chooper_widget3->spinbox_duty->value());
+        paintChooper4(chooper_widget4->spinbox_distance->value(),
+                      chooper_widget4->spinbox_phase->value(),
+                      chooper_widget4->spinbox_period->value(),
+                      chooper_widget4->spinbox_duty->value());
+
+    }
 
 signals:
     void sendPercentLiveNeutrons(double);

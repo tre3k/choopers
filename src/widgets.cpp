@@ -190,7 +190,7 @@ InteractivePlot::~InteractivePlot(){
 
 
 /* Central Widget */
-CentralWidget::CentralWidget(QWidget *parent) : QWidget(parent){
+CentralWidget::CentralWidget(QStatusBar *sb, QWidget *parent) : QWidget(parent){
     auto main_layout = new QHBoxLayout(this);
     auto right_widget = new QWidget();
     auto right_layout = new QVBoxLayout(right_widget);
@@ -286,6 +286,10 @@ CentralWidget::CentralWidget(QWidget *parent) : QWidget(parent){
 
     rd = new ResultDialog();
     connect(this,SIGNAL(sendPercentLiveNeutrons(double)),rd,SLOT(showPercentNeutron(double)));
+
+    main_status_bar = sb;
+    main_status_bar->showMessage("done.");
+    connect(plot,SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)),this,SLOT(showMessageFromPlot(QCPAbstractPlottable*,int,QMouseEvent*)));
 }
 
 void CentralWidget::paintSampleDistance(double distance){
@@ -342,8 +346,7 @@ void CentralWidget::paintChooper(int chooper_no, QString text, double distance, 
     for(int i=0;i<lines_chooper[chooper_no].count();i++) delete lines_chooper[chooper_no].at(i);
     lines_chooper[chooper_no].clear();
 
-    //int N_lines = (plot->xAxis->range().upper - plot->xAxis->range().lower)/period;
-    int N_lines = (time_range.max - time_range.min)/period;
+    int N_lines = (options.time_range_max - options.time_range_min)/period;
     double x_coord = phase, y_coord = distance;
     QCPItemLine *item_line;
     QPen line_pen;
@@ -361,100 +364,179 @@ void CentralWidget::paintChooper(int chooper_no, QString text, double distance, 
     plot->replot();
 }
 
-s_windows CentralWidget::getWindowsFromChooper(double distance, double phase, double period, double duty){
-    s_windows windows;
-    s_window window;
-    int N_lines = (time_range.max - time_range.min)/period;
-
-    windows.distance = distance;
-
-    for(int i=0;i<N_lines;i++){
-        window.max = phase+i*period;
-        window.min = phase+i*period - period*duty/100;
-        windows.windows.append(window);
-    }
-
-    return windows;
-}
-
-
 void CentralWidget::ReleaseCalculatrion(){
     plot->clearGraphs();
-    int all_neutrons = 0,live_neutrons = 0;
-    double neutron_percent;
-
-    int time_count = 0;
-    int lambda_count = 0;
+    PlotRescaleAxis();
+    plot->replot();
+    QThread::msleep(100);
 
     double time,lambda;
 
     double time_min, time_max, time_step;
     double lambda_min,lambda_max,lambda_step;
-    lambda_min = 1;
-    lambda_max = 12;
-    lambda_step = 0.5;
 
-    time_min = time_range.min;
-    time_max = time_range.max;
-    time_step = 1;
+    lambda_min = options.lambda_min;
+    lambda_max = options.lambda_max;
+    lambda_step = options.lambda_step;
 
+    time_min = options.time_range_min;
+    time_max = options.time_range_max;
+    time_step = options.time_step;
 
+    int threads = options.therads;
 
-    s_windows wins1 = getWindowsFromChooper(chooper_widget1->spinbox_distance->value(),
-                                           chooper_widget1->spinbox_phase->value(),
-                                           chooper_widget1->spinbox_period->value(),
-                                           chooper_widget1->spinbox_duty->value());
-    s_windows wins2 = getWindowsFromChooper(chooper_widget2->spinbox_distance->value(),
-                                           chooper_widget2->spinbox_phase->value(),
-                                           chooper_widget2->spinbox_period->value(),
-                                           chooper_widget2->spinbox_duty->value());
-    s_windows wins3 = getWindowsFromChooper(chooper_widget3->spinbox_distance->value(),
-                                           chooper_widget3->spinbox_phase->value(),
-                                           chooper_widget3->spinbox_period->value(),
-                                           chooper_widget3->spinbox_duty->value());
-    s_windows wins4 = getWindowsFromChooper(chooper_widget4->spinbox_distance->value(),
-                                           chooper_widget4->spinbox_phase->value(),
-                                           chooper_widget4->spinbox_period->value(),
-                                           chooper_widget4->spinbox_duty->value());
+    for(int i=0;i<neutrons.size();i++) delete neutrons.at(i);
+    neutrons.clear();
 
+    windows *wins1 = new windows();
+    wins1->setTimeRange(time_min,time_max);
+    wins1->setWindows(chooper_widget1->spinbox_distance->value(),
+                      chooper_widget1->spinbox_phase->value(),
+                      chooper_widget1->spinbox_period->value(),
+                      chooper_widget1->spinbox_duty->value());
+    windows *wins2 = new windows();
+    wins2->setTimeRange(time_min,time_max);
+    wins2->setWindows(chooper_widget2->spinbox_distance->value(),
+                      chooper_widget2->spinbox_phase->value(),
+                      chooper_widget2->spinbox_period->value(),
+                      chooper_widget2->spinbox_duty->value());
+    windows *wins3 = new windows();
+    wins3->setTimeRange(time_min,time_max);
+    wins3->setWindows(chooper_widget3->spinbox_distance->value(),
+                      chooper_widget3->spinbox_phase->value(),
+                      chooper_widget3->spinbox_period->value(),
+                      chooper_widget3->spinbox_duty->value());
+    windows *wins4 = new windows();
+    wins4->setTimeRange(time_min,time_max);
+    wins4->setWindows(chooper_widget4->spinbox_distance->value(),
+                      chooper_widget4->spinbox_phase->value(),
+                      chooper_widget4->spinbox_period->value(),
+                      chooper_widget4->spinbox_duty->value());
 
+    /* Generate Neutrons */
     time = time_min;
     while(time <= time_max){
         lambda = lambda_min;
-        lambda_count = 0;
         while(lambda <= lambda_max){
-            Neutron neutron = time;
-            neutron.setWavelength(lambda);
-            neutron.setSampleDistance(spinbox_sample_position->value());
+            Neutron *neutron = new Neutron(time);                     // time of birth
+            neutron->setWavelength(lambda);
+            neutron->setSampleDistance(spinbox_sample_position->value());
 
-            neutron.addChopper(wins4);
-            neutron.addChopper(wins3);
-            neutron.addChopper(wins2);
-            neutron.addChopper(wins1);
-
-            neutron.trace(500,100);
-
-            if(neutron.isLive()){
-                plot->addGraph();
-                plot->graph()->setName(QString::number(lambda));
-                plot->graph()->setData(neutron.v_time,neutron.v_distance);
-                plot->replot();
-
-                live_neutrons ++;
-            }
-
+            neutron->addChopper(wins4);
+            neutron->addChopper(wins3);
+            neutron->addChopper(wins2);
+            neutron->addChopper(wins1);
             lambda += lambda_step;
-            lambda_count ++;
 
-            all_neutrons ++;
+            neutrons.append(neutron);
         }
-
-        time_count++;
         time += time_step;
     }
 
-    neutron_percent = 100.0*live_neutrons/(double)all_neutrons;
-    emit sendPercentLiveNeutrons(neutron_percent);
-    rd->show();
 
+    int n_from,n_to;
+    int count_for_thread = neutrons.size()/threads;
+    qDebug() << "neutrons: " << neutrons.size();
+    qDebug() << "count: " << count_for_thread;
+    for(int i=0;i<=threads;i++){
+        n_from = i*count_for_thread;
+        n_to = (i+1)*count_for_thread;
+        if(threads==i) n_to = neutrons.size()-n_from;
+
+        CalculateThread *ct = new CalculateThread();
+        connect(ct,SIGNAL(PlotNeutron(Neutron*)),this,SLOT(PlotNeutron(Neutron*)));
+        connect(ct,SIGNAL(end(CalculateThread*)),this,SLOT(EndThread(CalculateThread*)));
+        ct->setVisibleTimeAndPoint(time_max,5);
+        ct->setNeutrons(&neutrons,n_from,n_to);
+        ct->start();
+    }
+
+    rd->show();
+}
+
+
+void CentralWidget::PlotNeutron(Neutron *neutron){
+    plot->addGraph();
+    plot->graph()->setName("λ = "+QString::number(neutron->getWavelenght())+" Å, start time: "+QString::number(neutron->getStartTime())+" ms");
+    plot->graph()->setData(neutron->v_time,neutron->v_distance);
+    QPen pen_style;
+    QPen pen_style_selection;
+    QCPSelectionDecorator *decor = new QCPSelectionDecorator();
+
+    pen_style.setWidth(1);
+    pen_style.setColor(colorFromLambda(neutron->getWavelenght()));
+
+    pen_style_selection.setWidth(2);
+    pen_style_selection.setColor(colorFromLambda(neutron->getWavelenght()));
+    decor->setPen(pen_style_selection);
+
+    plot->graph()->setPen(pen_style);
+    plot->graph()->setSelectionDecorator(decor);
+
+    plot->replot();
+
+    colorFromLambda(neutron->getWavelenght());
+}
+
+void CentralWidget::EndThread(CalculateThread *ct){
+    disconnect(ct,SIGNAL(PlotNeutron(Neutron*)),this,SLOT(PlotNeutron(Neutron*)));
+    disconnect(ct,SIGNAL(end(CalculateThread*)),this,SLOT(EndThread(CalculateThread*)));
+    delete ct;
+
+    int live_neutrons = 0;
+    for(int i = 0;i<neutrons.size();i++) if(neutrons.at(i)->isLive()) live_neutrons ++;
+    emit sendPercentLiveNeutrons(100.0*live_neutrons/(double)neutrons.size());
+
+}
+
+QColor CentralWidget::colorFromLambda(double lambda){
+    QColor retval;
+    const double max_color = 245;
+    const double min_color = 10;
+    const double alpha = 200;
+    double r = 0,g = r,b = r;
+    double delta_lambda = (options.lambda_max - options.lambda_min)/6;
+    double coeff;
+
+    qDebug() << lambda;
+
+    /* #1 interval */
+    if(lambda >= options.lambda_min && lambda < options.lambda_min+delta_lambda){
+        coeff = (lambda-options.lambda_min)/delta_lambda;
+        r = max_color; g = min_color + coeff*(max_color-min_color); b = min_color;
+    }
+
+    /* #2 interval */
+    if(lambda >= options.lambda_min + delta_lambda && lambda < options.lambda_min + 2*delta_lambda){
+        coeff = (lambda - options.lambda_min - delta_lambda)/delta_lambda;
+        r = max_color - coeff*(max_color-min_color); g = max_color; b = min_color;
+    }
+
+    /* #3 interval */
+    if(lambda >= options.lambda_min + 2*delta_lambda && lambda < options.lambda_min + 3*delta_lambda){
+        coeff = (lambda-options.lambda_min - 2*delta_lambda)/delta_lambda;
+        r = min_color; g = max_color; b = min_color + coeff*(max_color-min_color);
+    }
+
+    /* #4 interval */
+    if(lambda >= options.lambda_min + 3*delta_lambda && lambda < options.lambda_min + 4*delta_lambda){
+        coeff = (lambda-options.lambda_min - 3*delta_lambda)/delta_lambda;
+        r = min_color; g = max_color - coeff*(max_color-min_color); b = max_color;
+    }
+
+    /* #5 interval */
+    if(lambda >= options.lambda_min + 4*delta_lambda && lambda < options.lambda_min + 5*delta_lambda){
+        coeff = (lambda - options.lambda_min - 4*delta_lambda)/delta_lambda;
+        r = min_color + coeff*(max_color-min_color); g = min_color; b = max_color;
+    }
+
+    /* #6 interval */
+    if(lambda >= options.lambda_min + 5*delta_lambda && lambda <= options.lambda_max){
+        coeff = (lambda-options.lambda_min - 5*delta_lambda)/delta_lambda;
+        r = max_color; g = min_color; b = max_color - coeff*(max_color-min_color);
+    }
+
+    retval = QColor((int)r,(int)g,(int)b,alpha);
+
+    return retval;
 }

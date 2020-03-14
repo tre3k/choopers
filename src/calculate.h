@@ -9,6 +9,7 @@
 
 #include <math.h>
 #include <QVector>
+#include <QThread>
 
 #include <QDebug>
 
@@ -19,9 +20,33 @@ struct s_window{
     double min,max;
 };
 
-struct s_windows{
-    double distance;
-    QVector<s_window> windows;
+class windows{
+private:
+    double ds;
+    double time_range_max, time_range_min;
+public:
+    void setWindows(double distance, double phase, double period, double duty){
+        s_window window;
+        int N_lines = (time_range_max - time_range_min)/period;
+        qDebug() << N_lines;
+        ds = distance;
+        for(int i=0;i<N_lines;i++){
+            window.max = phase+i*period;
+            window.min = phase+i*period - period*duty/100;
+            wins.append(window);
+        }
+    }
+
+    QVector<s_window> wins;
+    void setDistance(double distance){
+        ds = distance;
+    }
+    double getDistance(void){return ds;}
+    void setTimeRange(double lower_time, double upper_time){
+        time_range_max = upper_time;
+        time_range_min = lower_time;
+    }
+
 };
 
 class Neutron{
@@ -29,6 +54,7 @@ public:
     Neutron(double st = 0);            //start_time
 
     void setWavelength(double wavelenght){lambda = wavelenght;}
+    double getWavelenght(void){return lambda;}
     void setStartTime(double st){start_time = st;}
 
     bool isLive(void){return live;}
@@ -41,9 +67,10 @@ public:
         sample_time = this->getTime(distance);
     }
     double getSampleTime(void){return sample_time;}
-    void trace(double end_time=500.0,double step=1.0);
+    double getStartTime(void){return start_time;}
+    void trace(double end_time=500.0,int points=5);
 
-    void addChopper(s_windows chopper){
+    void addChopper(windows *chopper){
         choppers.append(chopper);
     }
 
@@ -56,8 +83,39 @@ private:
     double start_time;
     double sample_time = 0;
 
-    QVector<s_windows> choppers;
+    QVector<windows *> choppers;
 
+
+};
+
+
+class CalculateThread : public QThread
+{
+    Q_OBJECT
+
+    void run() override;
+
+private:
+    double v_time = 500.0;
+    int trace_point = 3;
+
+    int neutron_from, neutron_to;
+    QVector<Neutron *> *ns;
+
+public slots:
+    void setVisibleTimeAndPoint(double time,int point){
+        v_time = time;
+        trace_point = point;
+    }
+    void setNeutrons(QVector<Neutron *> *neutrons,int from, int to){
+        ns = neutrons;
+        neutron_from = from;
+        neutron_to = to;
+    }
+
+signals:
+    void PlotNeutron(Neutron *);
+    void end(CalculateThread *ct);
 
 };
 

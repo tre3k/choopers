@@ -26,29 +26,40 @@ double Neutron::getTime(double distance){
     return T;
 }
 
-void Neutron::trace(double end_time,double step){
+void Neutron::trace(double end_time,int points){
     double chopper_distance,time_value_at_chopper;
     double t_min,t_max;
 
+    double step = (end_time-start_time)/(double)points;
+    double time = start_time;
+
     for(int i=0;i<choppers.size();i++){
         live = false;
-        chopper_distance = choppers.at(i).distance;
+        chopper_distance = choppers.at(i)->getDistance();
         time_value_at_chopper = getTime(chopper_distance);
-        //qDebug() << "Distance: " << chopper_distance;
-        for(int j=0;j<choppers.at(i).windows.size();j++){
-            t_min = choppers.at(i).windows.at(j).min;
-            t_max = choppers.at(i).windows.at(j).max;
-            //qDebug() << t_min << " " << t_max << " time value:" << time_value_at_chopper;
+        for(int j=0;j<choppers.at(i)->wins.size();j++){
+            t_min = choppers.at(i)->wins.at(j).min;
+            t_max = choppers.at(i)->wins.at(j).max;
 
             if(time_value_at_chopper >= t_min && time_value_at_chopper <= t_max) live = true;
         }
         if(!isLive()) return;
     }
 
-
+    /* build data for plot */
     v_time.clear(); v_distance.clear();
     for(double time = start_time; time <= end_time; time+=step){
         v_time.append(time);
         v_distance.append(getDistance(time));
     }
+
+}
+
+void CalculateThread::run(){
+    for(int i=neutron_from;i<neutron_to;i++){
+        ns->at(i)->trace(v_time,trace_point);
+        if(ns->at(i)->isLive()) emit PlotNeutron(ns->at(i));
+    }
+
+    emit end(this);
 }
