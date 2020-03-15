@@ -10,8 +10,8 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     QLocale locale("en_EN.UTF-8");
     this->setLocale(locale);
 
-    QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
-    this->setFont(fontDroid);
+    //QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
+    //this->setFont(fontDroid);
 
     this->setWindowTitle(title);
     this->setWindowIcon(QIcon(":/icons/sett.svg"));
@@ -103,8 +103,8 @@ void ChopperDialog::calculate(){
 ResultDialog::ResultDialog(QWidget *parent) : QDialog(parent){
     this->setWindowTitle("Result");
 
-    QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
-    this->setFont(fontDroid);
+    //QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
+    //this->setFont(fontDroid);
 
     percentLabel = new QLabel();
     min_lambda = new QLabel();
@@ -135,8 +135,8 @@ void ResultDialog::showPercentNeutron(double percent){
 OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
     this->setWindowTitle("Options");
 
-    QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
-    this->setFont(fontDroid);
+    //QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
+    //this->setFont(fontDroid);
 
     QLocale locale("en_EN.UTF-8");
     this->setLocale(locale);
@@ -213,8 +213,8 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent){
     this->setWindowTitle("About");
     this->setWindowIcon(QIcon(":/icons/about.svg"));
 
-    QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
-    this->setFont(fontDroid);
+    //QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
+    //this->setFont(fontDroid);
 
     auto close_button = new QPushButton("close");
     auto main_layout = new QVBoxLayout();
