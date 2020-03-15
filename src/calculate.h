@@ -82,12 +82,11 @@ public:
 
 private:
     double lambda;
-    bool live = true;
+    bool live = false;
     double start_time;
     double sample_time = 0;
 
     QVector<windows *> choppers;
-
 
 };
 
@@ -100,7 +99,7 @@ class CalculateThread : public QThread
 
 private:
     double v_time = 500.0;
-    int trace_point = 3;
+    int trace_point = 2;
 
     int neutron_from, neutron_to;
     QVector<Neutron *> *ns;

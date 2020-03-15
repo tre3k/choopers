@@ -189,6 +189,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
 
     spinbox_lambda_step = new QDoubleSpinBox();
     spinbox_lambda_step->setSuffix(" Å");
+    spinbox_lambda_step->setRange(0.01,999);
     spinbox_lambda_step->setSingleStep(0.1);
 
     spinboxs_layout->addRow("λ<sub>min</sub>: ",spinbox_lambda_min);
@@ -205,7 +206,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
 
     spinbox_time_step = new QDoubleSpinBox();
     spinbox_time_step->setSuffix(" ms");
-    spinbox_time_step->setRange(0,9999);
+    spinbox_time_step->setRange(0.01,9999);
     spinbox_time_step->setSingleStep(0.1);
 
     spinboxs_layout->addRow("time<sub>min </sub>: ",spinbox_time_min);
@@ -225,6 +226,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
 
     spinbox_threads = new QSpinBox();
     spinboxs_layout->addRow("threads (cpus-1): ",spinbox_threads);
+    spinbox_threads->setRange(1,1024);
 
     button_close = new QPushButton("close");
     button_ok = new QPushButton("ok");

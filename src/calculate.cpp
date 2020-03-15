@@ -41,7 +41,7 @@ void Neutron::trace(double end_time,int points){
             t_min = choppers.at(i)->wins.at(j).min;
             t_max = choppers.at(i)->wins.at(j).max;
 
-            if(time_value_at_chopper >= t_min && time_value_at_chopper <= t_max) live = true;
+            if(time_value_at_chopper > t_min && time_value_at_chopper < t_max) live = true;
         }
         if(!isLive()) return;
     }
