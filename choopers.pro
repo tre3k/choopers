@@ -6,6 +6,7 @@ TARGET = choopers
 TEMPLATE = app
 
 SOURCES += \
+            src/interactiveplot.cpp \
             src/main.cpp \
             src/mainwindow.cpp \
             src/widgets.cpp \
@@ -14,6 +15,7 @@ SOURCES += \
             src/dialogs.cpp
 
 HEADERS += \
+            src/interactiveplot.h \
             src/mainwindow.h \
             src/widgets.h \
             src/external/qcustomplot.h \

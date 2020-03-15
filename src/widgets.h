@@ -15,11 +15,11 @@
 #include <QString>
 #include <QSplitter>
 #include <QVector>
-#include <qcustomplot.h>
 #include <QStatusBar>
 
 #include "calculate.h"
 #include "dialogs.h"
+#include "interactiveplot.h"
 
 class ChooperWidget : public QWidget
 {
@@ -55,40 +55,6 @@ private slots:
 
 signals:
     void ValuesChanged(double distance, double phase,double period,double duty);
-};
-
-
-class InteractivePlot : public QCustomPlot
-{
-    Q_OBJECT
-public:
-    explicit InteractivePlot(QWidget *parent = nullptr);
-    ~InteractivePlot();
-
-protected:
-    bool x_log = false;
-    bool y_log = false;
-
-private:
-
-public slots:
-
-protected slots:
-    void slot_sAxies_drag_zoom(QCPAxis *,QCPAxis::SelectablePart,QMouseEvent *);
-    void slot_full_drag_zoom(QMouseEvent *);
-    void slot_selectionChanged();
-    void slot_contextMenuReq(QPoint p);
-
-    void exportToPDF();
-    void exportToBMP();
-    void exportToJPG();
-    void exportToPNG();
-
-    void setXLog();
-    void setYLog();
-
-signals:
-
 };
 
 
@@ -192,6 +158,7 @@ public slots:
 signals:
     void sendMinMaxLambda(double,double);
     void sendPercentLiveNeutrons(double);
+    void sendDataForHistogramm(QVector<double>, QVector<double>);
 
 };
 

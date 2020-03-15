@@ -1,3 +1,9 @@
+/*
+ * Under license GNU GLP (c) 2020
+ * Autor: Kirill Pshenichnyi
+ *
+ */
+
 #ifndef DIALOGS_H
 #define DIALOGS_H
 
@@ -8,8 +14,10 @@
 #include <QRadioButton>
 #include <math.h>
 #include <QFontDatabase>
-
 #include <QDoubleSpinBox>
+
+#include "interactiveplot.h"
+
 
 struct s_options{
     double time_range_max;
@@ -83,10 +91,12 @@ public:
 
 private:
     QLabel *percentLabel = nullptr;
-    QFormLayout *mainLayout = nullptr;
 
     QLabel *min_lambda = nullptr;
     QLabel *max_lambda = nullptr;
+
+    InteractivePlot *plot_bars;
+    QCPBars *bars;
 
     QPushButton *close_button;
 public slots:
@@ -95,6 +105,7 @@ public slots:
         min_lambda->setText(QString::number(min)+" Å");
         max_lambda->setText(QString::number(max)+" Å");
     }
+    void buildHistogramm(QVector<double> key, QVector<double> value);
     void close_press(){
         this->hide();
     }

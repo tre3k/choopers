@@ -9,10 +9,6 @@
 ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     QLocale locale("en_EN.UTF-8");
     this->setLocale(locale);
-
-    //QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
-    //this->setFont(fontDroid);
-
     this->setWindowTitle(title);
     this->setWindowIcon(QIcon(":/icons/sett.svg"));
 
@@ -103,14 +99,39 @@ void ChopperDialog::calculate(){
 ResultDialog::ResultDialog(QWidget *parent) : QDialog(parent){
     this->setWindowTitle("Result");
 
-    //QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
-    //this->setFont(fontDroid);
-
     percentLabel = new QLabel();
     min_lambda = new QLabel();
     max_lambda = new QLabel();
-    mainLayout = new QFormLayout();
+    auto form_layout = new QFormLayout();
+    auto main_layout = new QVBoxLayout();
+
     auto button_layout = new QHBoxLayout();
+
+    plot_bars = new InteractivePlot();
+    plot_bars->setMinimumSize(600,400);
+    bars = new QCPBars(plot_bars->xAxis,plot_bars->yAxis);
+    QCPSelectionDecorator *s_decorator_for_bars = new QCPSelectionDecorator;
+    QPen bars_pen_normal;
+    QPen bars_pen_sel;
+    QBrush bars_brush_normal(QColor("#a35d8135"));
+    QBrush bars_brush_sel(QColor("#83c510"));
+
+    bars_pen_normal.setColor("#4e5dd8");
+    bars_pen_normal.setWidth(1);
+    bars_pen_sel.setColor("#233aee");
+    bars_pen_sel.setWidth(2);
+
+    bars->setPen(bars_pen_normal);
+    bars->setBrush(bars_brush_normal);
+
+    s_decorator_for_bars->setPen(bars_pen_sel);
+    s_decorator_for_bars->setBrush(bars_brush_sel);
+
+    bars->setSelectionDecorator(s_decorator_for_bars);
+
+    plot_bars->xAxis->setLabel("λ, Å");
+    plot_bars->yAxis->setLabel("count");
+
 
     close_button = new QPushButton("close");
     connect(close_button,SIGNAL(clicked()),this,SLOT(close_press()));
@@ -118,12 +139,28 @@ ResultDialog::ResultDialog(QWidget *parent) : QDialog(parent){
     button_layout->addStretch();
     button_layout->addWidget(close_button);
 
-    mainLayout->addRow("Neutrons is live: ",percentLabel);
-    mainLayout->addRow("Minimum wavelenght: ",min_lambda);
-    mainLayout->addRow("Maximum wavelenght: ",max_lambda);
-    mainLayout->addRow(button_layout);
+    form_layout->setSizeConstraint(QLayout::SetFixedSize);
+    form_layout->addRow("Neutrons is live: ",percentLabel);
+    form_layout->addRow("Minimum wavelenght: ",min_lambda);
+    form_layout->addRow("Maximum wavelenght: ",max_lambda);
+    form_layout->addRow(button_layout);
+    main_layout->addWidget(plot_bars);
+    main_layout->addLayout(form_layout);
 
-    this->setLayout(mainLayout);
+
+    this->setLayout(main_layout);
+}
+
+void ResultDialog::buildHistogramm(QVector<double> key, QVector<double> value){
+    bars->data().clear();
+    bars->setData(key,value);
+    if(key.size() > 2){
+        bars->setWidth((key.at(1)-key.at(0))*0.8);
+    }else{
+        bars->setWidth(1.0);
+    }
+    plot_bars->rescaleAxes(true);
+    plot_bars->replot();
 }
 
 void ResultDialog::showPercentNeutron(double percent){
@@ -134,9 +171,6 @@ void ResultDialog::showPercentNeutron(double percent){
 /* options dialog */
 OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
     this->setWindowTitle("Options");
-
-    //QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
-    //this->setFont(fontDroid);
 
     QLocale locale("en_EN.UTF-8");
     this->setLocale(locale);
@@ -212,9 +246,6 @@ OptionsDialog::OptionsDialog(QWidget *parent) : QDialog(parent){
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent){
     this->setWindowTitle("About");
     this->setWindowIcon(QIcon(":/icons/about.svg"));
-
-    //QFont fontDroid(QFontDatabase::applicationFontFamilies(QFontDatabase::addApplicationFont(":/fonts/droid.ttf")).at(0),9);
-    //this->setFont(fontDroid);
 
     auto close_button = new QPushButton("close");
     auto main_layout = new QVBoxLayout();
