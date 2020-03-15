@@ -15,6 +15,11 @@
 #define C_PLANK 1.054571817e-34
 #define C_MASS_NEUTRON 1.67492749804e-27
 
+// For MSVS2017
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 struct s_window{
     double min,max;
 };

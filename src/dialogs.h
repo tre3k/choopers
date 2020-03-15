@@ -12,7 +12,6 @@
 #include <QFormLayout>
 #include <QPushButton>
 #include <QRadioButton>
-#include <math.h>
 #include <QFontDatabase>
 #include <QDoubleSpinBox>
 
