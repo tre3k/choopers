@@ -16,6 +16,8 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     auto form_layout = new QFormLayout();
 
     auto freq_layout = new QGridLayout();
+    auto gap_layout = new QGridLayout();
+
     radio_frequency = new QRadioButton();
     radio_rpm = new QRadioButton();
     spinbox_frequency = new QDoubleSpinBox();
@@ -25,17 +27,32 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
     spinbox_frequency->setRange(0,999);
     spinbox_rpm->setRange(0,60*9999);
 
-    spinbox_frequency->setMinimumHeight(20);
-    spinbox_rpm->setMinimumHeight(20);
 
     freq_layout->setMargin(0);
     freq_layout->addWidget(spinbox_frequency,0,0); freq_layout->addWidget(radio_frequency,0,1);
     freq_layout->addWidget(spinbox_rpm,1,0); freq_layout->addWidget(radio_rpm,1,1);
+    spinbox_frequency->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 
     spinbox_gaps = new QSpinBox();
     spinbox_width_gap = new QDoubleSpinBox();
     spinbox_width_gap->setSuffix(" mm");
-    spinbox_width_gap->setRange(0,99);
+    spinbox_width_gap->setRange(0,9999);
+    radio_widht_gap = new QRadioButton();
+    spinbox_angle = new QDoubleSpinBox();
+    spinbox_angle->setSuffix(" deg.");
+    spinbox_angle->setRange(0,360);
+
+    radio_angle_gap = new QRadioButton();
+    gap_layout->addWidget(new QLabel("width: "),0,0);
+    gap_layout->addWidget(spinbox_width_gap,0,1);
+    gap_layout->addWidget(radio_widht_gap,0,2);
+    gap_layout->addWidget(new QLabel("angle: "),1,0);
+    gap_layout->addWidget(spinbox_angle,1,1);
+    gap_layout->addWidget(radio_angle_gap,1,2);
+    gap_layout->addWidget(new QLabel("gaps: "),2,0);
+    gap_layout->addWidget(spinbox_gaps,2,1);
+    spinbox_width_gap->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
+
     spinbox_cb = new QDoubleSpinBox();
     spinbox_cb->setSuffix(" cm");
     spinbox_cb->setRange(0,99);
@@ -51,16 +68,20 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
 
     spinbox_frequency->setValue(10.0);
     spinbox_rpm->setValue(HzToRPM(spinbox_frequency->value()));
-    spinbox_gaps->setValue(4);
+    spinbox_gaps->setValue(2);
     spinbox_width_gap->setValue(10);
-    spinbox_cb->setValue(20);
+    spinbox_cb->setValue(30);
 
+    //form_layout->addRow("frequency: ",freq_layout);
+    auto group_freq_box = new QGroupBox("Frequency");
+    group_freq_box->setLayout(freq_layout);
 
+    auto gap_group_layout = new QGroupBox("Gap");
+    gap_group_layout->setLayout(gap_layout);
 
-    form_layout->addRow("frequency: ",freq_layout);
-    form_layout->addRow("gaps: ",spinbox_gaps);
-    form_layout->addRow("widht of gap: ",spinbox_width_gap);
-    form_layout->addRow("distance center to beam: ",spinbox_cb);
+    form_layout->addRow(group_freq_box);
+    form_layout->addRow(gap_group_layout);
+    form_layout->addRow("distance center to beam (r): ",spinbox_cb);
     main_layout->addLayout(form_layout);
     main_layout->addLayout(button_layout);
 
@@ -68,15 +89,24 @@ ChopperDialog::ChopperDialog(QString title, QWidget *parent) : QDialog(parent){
 
     connect(radio_rpm,SIGNAL(toggled(bool)),spinbox_rpm,SLOT(setEnabled(bool)));
     connect(radio_frequency,SIGNAL(toggled(bool)),spinbox_frequency,SLOT(setEnabled(bool)));
-
     radio_frequency->setChecked(true);
     spinbox_rpm->setDisabled(true);
 
-    connect(button_ok,SIGNAL(clicked()),this,SLOT(calculate()));
-    connect(button_close,SIGNAL(clicked()),this,SLOT(close()));
+    connect(radio_angle_gap,SIGNAL(toggled(bool)),spinbox_angle,SLOT(setEnabled(bool)));
+    connect(radio_widht_gap,SIGNAL(toggled(bool)),spinbox_width_gap,SLOT(setEnabled(bool)));
+    radio_angle_gap->setChecked(true);
+    spinbox_width_gap->setDisabled(true);
 
     connect(spinbox_frequency,SIGNAL(valueChanged(double)),this,SLOT(FreqChanged(double)));
     connect(spinbox_rpm,SIGNAL(valueChanged(double)),this,SLOT(RpmChanged(double)));
+
+    connect(spinbox_angle,SIGNAL(valueChanged(double)),this,SLOT(AngleChanged(double)));
+    connect(spinbox_width_gap,SIGNAL(valueChanged(double)),this,SLOT(WidhtChanged(double)));
+    connect(spinbox_cb,SIGNAL(valueChanged(double)),this,SLOT(CBChanged(double)));
+    spinbox_angle->setValue(120);
+
+    connect(button_ok,SIGNAL(clicked()),this,SLOT(calculate()));
+    connect(button_close,SIGNAL(clicked()),this,SLOT(close()));
 }
 
 void ChopperDialog::calculate(){
@@ -109,6 +139,7 @@ ResultDialog::ResultDialog(QWidget *parent) : QDialog(parent){
 
     plot_bars = new InteractivePlot();
     plot_bars->setMinimumSize(600,400);
+    plot_bars->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
     bars = new QCPBars(plot_bars->xAxis,plot_bars->yAxis);
     QCPSelectionDecorator *s_decorator_for_bars = new QCPSelectionDecorator;
     QPen bars_pen_normal;

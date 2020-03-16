@@ -30,6 +30,7 @@ ChooperWidget::ChooperWidget(QString str_label, QWidget *parent) : QWidget(paren
     spinbox_distance = new QDoubleSpinBox();
     spinbox_distance->setSuffix(" m");
     spinbox_distance->setRange(0,99999);
+    spinbox_distance->setSingleStep(0.1);
 
     spinbox_phase = new QDoubleSpinBox();
     spinbox_phase->setSuffix(" ms");
@@ -37,7 +38,7 @@ ChooperWidget::ChooperWidget(QString str_label, QWidget *parent) : QWidget(paren
 
     spinbox_period = new QDoubleSpinBox();
     spinbox_period->setSuffix(" ms");
-    spinbox_period->setRange(0,9999);
+    spinbox_period->setRange(0,99999);
 
     spinbox_duty = new QDoubleSpinBox();
     spinbox_duty->setRange(0,100);
@@ -75,20 +76,16 @@ CentralWidget::CentralWidget(QStatusBar *sb, QWidget *parent) : QWidget(parent){
 
     spinbox_detector_position = new QDoubleSpinBox();
     spinbox_detector_position->setSuffix(" m");
+    spinbox_detector_position->setSingleStep(0.1);
 
     spinbox_sample_position = new QDoubleSpinBox();
     spinbox_sample_position->setSuffix(" m");
+    spinbox_sample_position->setSingleStep(0.1);
     sample_position_layout->addRow("Detector position: ",spinbox_detector_position);
     sample_position_layout->addRow("Sample position: ",spinbox_sample_position);
 
     main_layout->setMargin(0);
     main_layout->addWidget(splitter);
-
-    // default values for rnage
-    time_range.max = 500.0;
-    time_range.min = 0;
-    distance_range.max = 40.0;
-    distance_range.min = 0;
 
     for(int i=0;i<4;i++) text_chooper[i] = nullptr;
 
@@ -134,28 +131,28 @@ CentralWidget::CentralWidget(QStatusBar *sb, QWidget *parent) : QWidget(parent){
 
 
     // default value for sample position
-    spinbox_sample_position->setValue(25.0);
-    spinbox_detector_position->setValue(30.0);
+    spinbox_sample_position->setValue(20);
+    spinbox_detector_position->setValue(25);
 
-    chooper_widget1->spinbox_distance->setValue(5);
+    chooper_widget1->spinbox_distance->setValue(2.8);
     chooper_widget1->spinbox_period->setValue(50);
-    chooper_widget1->spinbox_phase->setValue(10);
-    chooper_widget1->spinbox_duty->setValue(10);
+    chooper_widget1->spinbox_phase->setValue(55);
+    chooper_widget1->spinbox_duty->setValue(66.67);
 
-    chooper_widget2->spinbox_distance->setValue(4);
-    chooper_widget2->spinbox_period->setValue(20);
-    chooper_widget2->spinbox_phase->setValue(10);
-    chooper_widget2->spinbox_duty->setValue(50);
+    chooper_widget2->spinbox_distance->setValue(2.30);
+    chooper_widget2->spinbox_period->setValue(50);
+    chooper_widget2->spinbox_phase->setValue(38);
+    chooper_widget2->spinbox_duty->setValue(66.67);
 
-    chooper_widget3->spinbox_distance->setValue(2);
-    chooper_widget3->spinbox_period->setValue(30);
-    chooper_widget3->spinbox_phase->setValue(10);
-    chooper_widget3->spinbox_duty->setValue(30);
+    chooper_widget3->spinbox_distance->setValue(1.50);
+    chooper_widget3->spinbox_period->setValue(50);
+    chooper_widget3->spinbox_phase->setValue(19);
+    chooper_widget3->spinbox_duty->setValue(66.67);
 
     chooper_widget4->spinbox_distance->setValue(1);
-    chooper_widget4->spinbox_period->setValue(30);
-    chooper_widget4->spinbox_phase->setValue(15);
-    chooper_widget4->spinbox_duty->setValue(30);
+    chooper_widget4->spinbox_period->setValue(50);
+    chooper_widget4->spinbox_phase->setValue(0);
+    chooper_widget4->spinbox_duty->setValue(66.67);
 
     rd = new ResultDialog();
     connect(this,SIGNAL(sendPercentLiveNeutrons(double)),rd,SLOT(showPercentNeutron(double)));

@@ -17,10 +17,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     this->setWindowTitle("Choopers ");
 
     /* default options */
-    options.distance_range_max = 40.0;
+    options.distance_range_max = 30.0;
     options.distance_range_min = 0.0;
 
-    options.time_range_max = 500;
+    options.time_range_max = 300;
     options.time_range_min = 0;
     options.time_step = 1.0;
 

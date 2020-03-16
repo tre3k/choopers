@@ -15,6 +15,7 @@
 #include <QFontDatabase>
 #include <QDoubleSpinBox>
 
+#include "calculate.h"
 #include "interactiveplot.h"
 
 
@@ -49,7 +50,10 @@ private:
     QRadioButton *radio_rpm;
 
     QSpinBox *spinbox_gaps;
+    QRadioButton *radio_widht_gap;
+    QRadioButton *radio_angle_gap;
     QDoubleSpinBox *spinbox_width_gap;
+    QDoubleSpinBox *spinbox_angle;
     QDoubleSpinBox *spinbox_cb;
 
     QPushButton *button_ok;
@@ -60,6 +64,12 @@ private:
     }
     double RPMToHz(double val){
         return val/60.0;
+    }
+    double WidthToAngle(double val,double radius){
+        return val*360/2/M_PI/radius/10;
+    }
+    double AngleToWidth(double val,double radius){
+        return 10*2*M_PI*radius*val/360;
     }
 
 private slots:
@@ -73,11 +83,20 @@ private slots:
     void RpmChanged(double value){
         spinbox_frequency->setValue(RPMToHz(value));
     }
+    void WidhtChanged(double value){
+        spinbox_angle->setValue(WidthToAngle(value,spinbox_cb->value()));
+    }
+    void AngleChanged(double value){
+        spinbox_width_gap->setValue(AngleToWidth(value,spinbox_cb->value()));
+    }
+    void CBChanged(double value){
+        spinbox_width_gap->setValue(AngleToWidth(spinbox_angle->value(),value));
+    }
+
 
 signals:
     void sendDuty(double);
     void sendPeriod(double);
-
 
 };
 
