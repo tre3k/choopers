@@ -304,3 +304,55 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent){
     this->setLayout(main_layout);
 
 }
+
+
+
+CalculatorDialog::CalculatorDialog(QWidget *parent) : QDialog(parent){
+    spinbox_lambda = new QDoubleSpinBox();
+    spinbox_lambda->setRange(0.01,999.99);
+    spinbox_lambda->setSingleStep(0.1);
+    spinbox_lambda->setSuffix(" Å");
+    button_close = new QPushButton("close");
+    label_speed = new QLabel();
+    label_energy_joul = new QLabel();
+    label_energy_mev = new QLabel();
+    label_energy_kelvin = new QLabel();
+
+    label_speed->setAlignment(Qt::AlignRight);
+    label_energy_joul->setAlignment(Qt::AlignRight);
+    label_energy_mev->setAlignment(Qt::AlignRight);
+    label_energy_kelvin->setAlignment(Qt::AlignRight);
+
+    auto form_layout = new QFormLayout(this);
+
+    auto button_layout = new QHBoxLayout();
+    button_layout->addStretch();
+    button_layout->addWidget(button_close);
+    auto v_button_layout = new QVBoxLayout();
+    v_button_layout->addStretch();
+    v_button_layout->addLayout(button_layout);
+
+    form_layout->addRow("Wavelenght: ",spinbox_lambda);
+    form_layout->addRow("Speed: ",label_speed);
+    form_layout->addRow("Energy (Joul): ",label_energy_joul);
+    form_layout->addRow("Energy (meV): ",label_energy_mev);
+    form_layout->addRow("Energy (K): ",label_energy_kelvin);
+    form_layout->addRow(v_button_layout);
+
+    connect(spinbox_lambda,SIGNAL(valueChanged(double)),this,SLOT(calculate(double)));
+    connect(button_close,SIGNAL(clicked()),this,SLOT(close()));
+
+    spinbox_lambda->setValue(6.0);
+
+}
+
+void CalculatorDialog::calculate(double value){
+    Neutron n;
+    n.setWavelength(value);
+    n.setStartTime(0);
+    label_speed->setText(QString::number(n.getVelosity())+" m/s");
+    label_energy_joul->setText(QString::number(n.getEnergyJoul())+ " Joul");
+    label_energy_mev->setText(QString::number(n.getEnergyMev())+ " meV");
+    label_energy_kelvin->setText(QString::number(n.getEnergyKelvin())+ " K");
+}
+

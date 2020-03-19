@@ -28,6 +28,7 @@ private:
         QMenu *file_menu;
         QAction *quit;
         QMenu *tools_menu;
+        QAction *calc;
         QAction *option;
         QMenu *help_menu;
         QAction *about;
@@ -39,6 +40,7 @@ private:
     s_options options;
     OptionsDialog *options_dialog;
     AboutDialog *about_dialog;
+    CalculatorDialog *calc_dialog;
 
 
 public:
@@ -49,12 +51,17 @@ signals:
     void sendOptions(s_options opt);
 
 public slots:
-    void action_options();
+    void action_options(){
+        options_dialog->show();
+    }
     void action_quit(){
         QApplication::quit();
     }
     void action_about(){
         about_dialog->show();
+    }
+    void action_neutron_calc(){
+        calc_dialog->show();
     }
 
 

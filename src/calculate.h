@@ -62,13 +62,16 @@ public:
     void setStartTime(double st){start_time = st;}
 
     double getEnergyJoul(void){
-        return C_PLANK*C_PLANK*4*M_PI*M_PI/lambda/lambda/1e-20;
+        return C_PLANK*C_PLANK*4*M_PI*M_PI/lambda/lambda/1e-20/2/C_MASS_NEUTRON;
     }
     double getEnergyMev(void){
         return 1000*getEnergyJoul()/C_ELECTRON;
     }
     double getEnergyKelvin(void){
         return getEnergyJoul()/C_BOLCMAN;
+    }
+    double getVelosity(void){
+        return 2*M_PI*C_PLANK/lambda/1e-10/C_MASS_NEUTRON;
     }
 
     bool isLive(void){return live;}

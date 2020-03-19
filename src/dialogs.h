@@ -210,7 +210,27 @@ public slots:
     void close(){
         this->hide();
     }
+};
 
+
+class CalculatorDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    explicit CalculatorDialog(QWidget *parent = nullptr);
+
+    QDoubleSpinBox *spinbox_lambda;
+    QPushButton *button_close;
+    QLabel *label_speed;
+    QLabel *label_energy_joul;
+    QLabel *label_energy_mev;
+    QLabel *label_energy_kelvin;
+
+public slots:
+    void close(){
+        this->hide();
+    }
+    void calculate(double value);
 };
 
 #endif // DIALOGS_H

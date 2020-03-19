@@ -36,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     options_dialog = new OptionsDialog();
     connect(this,SIGNAL(sendOptions(s_options)),options_dialog,SLOT(getOptions(s_options)));
 
+    calc_dialog = new CalculatorDialog();
+
     /* create central widget */
     CentralWidget *central_widget = new CentralWidget(this->statusBar());
     connect(this,SIGNAL(sendOptions(s_options)),central_widget,SLOT(getOptions(s_options)));
@@ -51,12 +53,16 @@ void MainWindow::createMenuBar(){
     menu_bar.file_menu = new QMenu("&File");
     menu_bar.quit = new QAction("&Quit");
     menu_bar.tools_menu = new QMenu("&Tools");
+    menu_bar.calc = new QAction("&Neutron calculator");
     menu_bar.option = new QAction("&Options");
     menu_bar.help_menu = new QMenu("&Help");
     menu_bar.about = new QAction("&About");
 
     menu_bar.file_menu->addAction(menu_bar.quit);
     connect(menu_bar.quit,SIGNAL(triggered()),this,SLOT(action_quit()));
+    menu_bar.tools_menu->addAction(menu_bar.calc);
+    menu_bar.tools_menu->addSeparator();
+    connect(menu_bar.calc,SIGNAL(triggered()),this,SLOT(action_neutron_calc()));
     menu_bar.tools_menu->addAction(menu_bar.option);
     connect(menu_bar.option,SIGNAL(triggered()),this,SLOT(action_options()));
     menu_bar.help_menu->addAction(menu_bar.about);
@@ -73,8 +79,4 @@ void MainWindow::createStatusBar(){
     this->statusBar()->show();
 }
 
-
-void MainWindow::action_options(){
-    options_dialog->show();
-}
 
