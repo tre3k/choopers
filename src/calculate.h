@@ -14,6 +14,8 @@
 
 #define C_PLANK 1.054571817e-34
 #define C_MASS_NEUTRON 1.67492749804e-27
+#define C_ELECTRON 1.60217662e-19
+#define C_BOLCMAN 1.380649e-23
 
 // For MSVS2017
 #ifndef M_PI
@@ -33,7 +35,7 @@ public:
         s_window window;
         int N_lines = (time_range_max - time_range_min)/period;
         ds = distance;
-        for(int i=0;i<N_lines;i++){
+        for(int i=-1;i<=N_lines;i++){
             window.max = phase+i*period;
             window.min = phase+i*period - period*duty/100;
             wins.append(window);
@@ -49,7 +51,6 @@ public:
         time_range_max = upper_time;
         time_range_min = lower_time;
     }
-
 };
 
 class Neutron{
@@ -59,6 +60,16 @@ public:
     void setWavelength(double wavelenght){lambda = wavelenght;}
     double getWavelenght(void){return lambda;}
     void setStartTime(double st){start_time = st;}
+
+    double getEnergyJoul(void){
+        return C_PLANK*C_PLANK*4*M_PI*M_PI/lambda/lambda/1e-20;
+    }
+    double getEnergyMev(void){
+        return 1000*getEnergyJoul()/C_ELECTRON;
+    }
+    double getEnergyKelvin(void){
+        return getEnergyJoul()/C_BOLCMAN;
+    }
 
     bool isLive(void){return live;}
     void kill(void){live = false;}
@@ -99,7 +110,7 @@ class CalculateThread : public QThread
 
 private:
     double v_time = 500.0;
-    int trace_point = 2;
+    int trace_point = 100;
 
     int neutron_from, neutron_to;
     QVector<Neutron *> *ns;

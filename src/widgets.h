@@ -104,6 +104,8 @@ private:
     /* Main Windows communication */
     QStatusBar *main_status_bar;
 
+    QVector<CalculateThread *> v_threads;
+
 private:
     void PlotRescaleAxis(void){
         plot->xAxis->setRange(options.time_range_min,options.time_range_max);

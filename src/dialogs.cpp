@@ -286,7 +286,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent){
     auto pixmap_label = new QLabel();
     QPixmap logo(":/icons/icon.svg");
     pixmap_label->setPixmap(logo.scaled(70,70,Qt::KeepAspectRatio,Qt::SmoothTransformation));
-    auto label = new QLabel("<b>Choopers v1.0</b><br><hr>"
+    auto label = new QLabel("<b>Choopers v1.1</b><br><hr>"
                             "Under license GNU GLPv3 (c) 2020<br>"
                             "Petersburg Nuclear Physics Institute named by B.P.Konstantinov of NRC «Kurchatov Institute» PNPI<br>"
                             "Saint-Petersburg State University<br>"

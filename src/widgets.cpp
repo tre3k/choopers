@@ -240,7 +240,14 @@ void CentralWidget::ReleaseCalculatrion(){
     plot->clearGraphs();
     PlotRescaleAxis();
     plot->replot();
-    QThread::msleep(100);
+    QThread::msleep(200);
+    for(int i=0;i<v_threads.size();i++){
+        if(v_threads.at(i)!=nullptr){
+            if(v_threads.at(i)->isRunning()) v_threads.at(i)->terminate();
+            delete v_threads.at(i);
+        }
+    }
+    v_threads.clear();
 
     double time,lambda;
 
@@ -316,6 +323,7 @@ void CentralWidget::ReleaseCalculatrion(){
         if(threads==i) n_to = neutrons.size()-n_from;
 
         CalculateThread *ct = new CalculateThread();
+        v_threads.append(ct);
         connect(ct,SIGNAL(PlotNeutron(Neutron*)),this,SLOT(PlotNeutron(Neutron*)));
         connect(ct,SIGNAL(end(CalculateThread*)),this,SLOT(EndThread(CalculateThread*)));
         ct->setVisibleTimeAndPoint(time_max,5);
@@ -353,7 +361,6 @@ void CentralWidget::PlotNeutron(Neutron *neutron){
 void CentralWidget::EndThread(CalculateThread *ct){
     disconnect(ct,SIGNAL(PlotNeutron(Neutron*)),this,SLOT(PlotNeutron(Neutron*)));
     disconnect(ct,SIGNAL(end(CalculateThread*)),this,SLOT(EndThread(CalculateThread*)));
-    delete ct;
 
     QVector<Neutron *> v_live_neutrons;
     int live_neutrons = 0;
