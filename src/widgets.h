@@ -39,7 +39,7 @@ private:
     ChopperDialog *chopper_dialog;
 
 private slots:
-    void GenerateSignal(QString str_value){
+    void GenerateSignal(double val){
         double distance,phase,period,duty;
 
         distance = spinbox_distance->value();

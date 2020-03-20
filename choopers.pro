@@ -2,6 +2,8 @@
 
 QT += core gui widgets printsupport
 
+QTPLUGIN += qsvg
+
 TARGET = choopers
 TEMPLATE = app
 

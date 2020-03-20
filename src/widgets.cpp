@@ -49,10 +49,10 @@ ChooperWidget::ChooperWidget(QString str_label, QWidget *parent) : QWidget(paren
     form_layout->addRow("period: ",spinbox_period);
     form_layout->addRow("duty: ", spinbox_duty);
 
-    connect(spinbox_distance,SIGNAL(valueChanged(QString)),this,SLOT(GenerateSignal(QString)));
-    connect(spinbox_phase,SIGNAL(valueChanged(QString)),this,SLOT(GenerateSignal(QString)));
-    connect(spinbox_period,SIGNAL(valueChanged(QString)),this,SLOT(GenerateSignal(QString)));
-    connect(spinbox_duty,SIGNAL(valueChanged(QString)),this,SLOT(GenerateSignal(QString)));
+    connect(spinbox_distance,SIGNAL(valueChanged(double)),this,SLOT(GenerateSignal(double)));
+    connect(spinbox_phase,SIGNAL(valueChanged(double)),this,SLOT(GenerateSignal(double)));
+    connect(spinbox_period,SIGNAL(valueChanged(double)),this,SLOT(GenerateSignal(double)));
+    connect(spinbox_duty,SIGNAL(valueChanged(double)),this,SLOT(GenerateSignal(double)));
 
     connect(chopper_dialog,SIGNAL(sendDuty(double)),spinbox_duty,SLOT(setValue(double)));
     connect(chopper_dialog,SIGNAL(sendPeriod(double)),spinbox_period,SLOT(setValue(double)));
